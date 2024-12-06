@@ -19,7 +19,7 @@ export class LoginComponent {
     if (this.mobileNumber && this.mobileNumber.toString().length === 10) {
       this.authService.loginWithPhoneNumber(this.mobileNumber).subscribe({
         next: (response) => {
-          this.toastr.success("Otp sent Successfully");
+          this.toastr.success(`Otp sent Successfully ${response.data.otpGenerated}`);
           this.Router.navigate(["/otp"], {
             queryParams: { Exist: response.data.isExists, mobileNumber: this.mobileNumber },
           });

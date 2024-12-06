@@ -37,7 +37,11 @@ import { HttpClientModule } from "@angular/common/http";
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 5000, // Set the timeout duration for the toast
+
+      tapToDismiss: false, // Disable closing the toast on click
+    }),
     FormsModule,
     HttpClientModule,
   ],
