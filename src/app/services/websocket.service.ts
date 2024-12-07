@@ -55,17 +55,33 @@ export class WebSocketService {
     };
   }
 
-  sendMessage(to: string, message: string): void {
+  async sendMessage(to: string, message: string): Promise<void> {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       const messagePayload = {
         type: "newMessage",
         to: to,
         message: message,
       };
-      this.socket.send(JSON.stringify(messagePayload));
-      setTimeout(() => {
-        this.chatHistoryUpdatedSubject.next();
-      }, 200);
+
+      try {
+        // Send the message
+        this.socket.send(JSON.stringify(messagePayload));
+
+        // Listen for the acknowledgment from the server
+        this.socket.addEventListener("message", (event) => {
+          const response = JSON.parse(event.data);
+
+          // Check if the response matches the expected format
+          if (response.success && response.messageId) {
+            console.log("Message sent successfully:", response.message);
+            this.chatHistoryUpdatedSubject.next(); // Notify about chat history updates
+          } else {
+            console.warn("Unexpected response format:", response);
+          }
+        });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     } else {
       console.error("WebSocket is not open. Unable to send message.");
     }
